@@ -44,7 +44,7 @@ def scrape_articles():
             with open('articles_parsed_with_html/{}'.format(article), 'w') as new_html_file:
                 new_html_file.write(html_text)
 
-            with open('articles_plain_text/{}'.format(article), 'w') as new_text_file:
+            with open('articles_plain_text/{}.txt'.format(article), 'w') as new_text_file:
                 new_text_file.write(plain_text)
 
 
