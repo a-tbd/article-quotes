@@ -9,6 +9,12 @@ def scrape_article():
             for script in soup(['script', 'style']):
                 script.decompose()
 
+            for ad in soup.find_all('div', class_='accessibility-ad-header'):
+                ad.decompose()
+
+            for skip_link in soup.find_all('a', class_='skip-to-text-link'):
+                skip_link.decompose()
+
             paras = soup.find_all('div', class_="story-body")
 
             text = '\n'.join([str(para) for para in paras])
