@@ -33,10 +33,15 @@ def scrape_articles():
             # Parse the real story data and send it to new files
             paras = soup.find_all('div', class_="story-body")
 
-            text = '\n'.join([str(para.prettify()) for para in paras])
+            html_text = '\n'.join([str(para.prettify()) for para in paras])
 
-            with open('articles_parsed_with_html/{}'.format(article), 'w') as new_file:
-                new_file.write(text)
+            plain_text = '\n'.join([str(para.get_text()) for para in paras])            
+
+            with open('articles_parsed_with_html/{}'.format(article), 'w') as new_html_file:
+                new_html_file.write(html_text)
+
+            with open('articles_plain_text/{}'.format(article), 'w') as new_text_file:
+                new_text_file.write(plain_text)
 
 
 if __name__ == '__main__':
