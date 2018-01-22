@@ -22,6 +22,10 @@ def scrape_articles():
             for ad in soup.find_all('div', class_=['accessibility-ad-header', 'newsletter-signup']):
                 ad.decompose()
 
+            # remove related articles
+            for related in soup.find_all('h2', class_='headline'):
+                related.decompose()
+
             # remove the useless anchor tag
             for skip_link in soup.find_all('a', class_='skip-to-text-link'):
                 skip_link.decompose()   
