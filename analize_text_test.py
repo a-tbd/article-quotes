@@ -43,39 +43,28 @@ def main():
                     all_names[last_name] = [ent.text]
                 else:
                     all_names[last_name].append(ent.text)
-    
-    # for ent in doc.ents:
-    #     if ent.label_ == 'PERSON':
-    #         # print(ent.text, ent.start_char, ent.end_char, ent.label_) 
-    #         data['names'].add(ent.text)
 
     data['n_names'] = len(data['names'])
 
 
     # We save names per sentence, it will repeat full names and last names as two different person, so if Donald J. Trup appears, it will say two person entities appear, Donald J. Trump and Trump
     for key, sent in enumerate(sents):
-        data['sentences'][key] = []
+        data['sentences'][key] = ([],[])
         for person in all_names.keys():
             if person in sent:
-                data['sentences'][key].append(person)
-    # for key, sent in enumerate(sents):
-    #     data['sentences'][key] = []
-    #     for person in data['names']:
-    #         if person in sent:
-                
-    #             # print(data['sentences'])
-    #             data['sentences'][key].append(person)
-                
+                data['sentences'][key][0].append(person)
+                data['sentences'][key][1].append(sent)
     
-
     
+    for key in data['sentences']:
+        with open('sentences.csv', 'a') as output_file:
+            new_entry = '{}, {}, {}, {}\n'.format(data['article_name'], key, data['sentences'][key][0], data['sentences'][key][1])
+            print(new_entry)
+            output_file.write(new_entry)
+    # pp.pprint(data)
 
-    pp.pprint(len(all_names))
-    pp.pprint(all_names)
-    pp.pprint(data)
-
-    
 
 
 if __name__ == '__main__':
     main()
+    open('sentences.csv', 'w').close()
