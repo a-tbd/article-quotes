@@ -33,29 +33,45 @@ def main():
 
     
        
-    
-    for ent in doc.ents:        
+    all_names = {}
+    for ent in doc.ents:      
         if ent.label_ == 'PERSON':
-            # print(ent.text, ent.start_char, ent.end_char, ent.label_) 
-            data['names'].add(ent.text)
+            name_parts = ent.text.split(' ')
+            if len(name_parts) > 1:
+                last_name = name_parts[-1]
+                if not last_name in all_names:
+                    all_names[last_name] = [ent.text]
+                else:
+                    all_names[last_name].append(ent.text)
+    
+    # for ent in doc.ents:
+    #     if ent.label_ == 'PERSON':
+    #         # print(ent.text, ent.start_char, ent.end_char, ent.label_) 
+    #         data['names'].add(ent.text)
 
     data['n_names'] = len(data['names'])
 
 
-    # We save names per sentence, it will repeat fuill names and last names as two different person, so if Donald J. Trup appears, it will say two person entities appear, Donald J. Trump and Trump
+    # We save names per sentence, it will repeat full names and last names as two different person, so if Donald J. Trup appears, it will say two person entities appear, Donald J. Trump and Trump
     for key, sent in enumerate(sents):
         data['sentences'][key] = []
-        for person in data['names']:
+        for person in all_names.keys():
             if person in sent:
-                
-                # print(data['sentences'])
                 data['sentences'][key].append(person)
+    # for key, sent in enumerate(sents):
+    #     data['sentences'][key] = []
+    #     for person in data['names']:
+    #         if person in sent:
+                
+    #             # print(data['sentences'])
+    #             data['sentences'][key].append(person)
                 
     
 
     
 
-
+    pp.pprint(len(all_names))
+    pp.pprint(all_names)
     pp.pprint(data)
 
     
