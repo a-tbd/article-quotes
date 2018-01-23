@@ -1,6 +1,7 @@
 import spacy
 
 import pprint
+import pdb
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -28,8 +29,11 @@ def main():
     for span in doc.sents:
         # go from the start to the end of each span, returning each token in the sentence
         # combine each token using join()
-        sent = ''.join(doc[i].string for i in range(span.start, span.end)).strip()
-        sents.append(sent)
+        # pdb.set_trace()
+        if len(span) > 1:
+            sent = ''.join(doc[i].string for i in range(span.start, span.end)).strip()
+
+            sents.append(sent)
 
     
        
@@ -49,19 +53,18 @@ def main():
 
     # We save names per sentence, it will repeat full names and last names as two different person, so if Donald J. Trup appears, it will say two person entities appear, Donald J. Trump and Trump
     for key, sent in enumerate(sents):
-        data['sentences'][key] = ([],[])
+        data['sentences'][key] = {'people':[],'text':''}
         for person in all_names.keys():
             if person in sent:
-                data['sentences'][key][0].append(person)
-                data['sentences'][key][1].append(sent)
+                data['sentences'][key]['people'].append(person)
+                data['sentences'][key]['text'] = sent
     
     
     for key in data['sentences']:
         with open('sentences.csv', 'a') as output_file:
-            new_entry = '{}, {}, {}, {}\n'.format(data['article_name'], key, data['sentences'][key][0], data['sentences'][key][1])
-            print(new_entry)
+            new_entry = '{}, {}, {}, {}\n'.format(data['article_name'], key, data['sentences'][key]['people'], data['sentences'][key]['text'])
             output_file.write(new_entry)
-    # pp.pprint(data)
+    pp.pprint(data)
 
 
 
