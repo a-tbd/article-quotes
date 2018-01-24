@@ -52,11 +52,10 @@ def parse_article(file_name):
 
 
     for key, sent in enumerate(sents):
-        data['sentences'][key] = {'people':[],'text':''}
+        data['sentences'][key] = {'people':[],'text':sent}
         for person in all_names.keys():
             if person in sent:
                 data['sentences'][key]['people'].append(person)
-                data['sentences'][key]['text'] = sent
 
     return data
     
