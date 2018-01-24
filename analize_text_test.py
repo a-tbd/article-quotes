@@ -1,6 +1,7 @@
 import spacy
 import csv
 import pprint
+import os
 import pdb
 import difflib
 
@@ -9,7 +10,7 @@ pp = pprint.PrettyPrinter(indent=4)
 nlp = spacy.load('en')
 
 def parse_article(file_name):
-
+    article_name = file_name.split('/')[-1]
     file = open(file_name, 'r')
     doc = nlp(file.read())
 
@@ -18,7 +19,7 @@ def parse_article(file_name):
     data = {
         'names': set(),
         'n_names': 0,
-        'article_name': 'a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt',
+        'article_name': article_name,
         'sentences':{}
     }
 
@@ -64,7 +65,6 @@ def write_to_csv(data):
     '''Write data from parsed articles to csv file in the following format:
     title | sentence number | sentence text | persons in article | names of people quoted
     '''
-    open('sentences.csv', 'w').close()
     for key in data['sentences']:
         with open('sentences.csv', 'a') as output_file:
             writer = csv.writer(output_file)
@@ -102,6 +102,13 @@ def main(file_name):
     write_to_csv(data)
 
 if __name__ == '__main__':
-    # main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
-    test()
+    # delete all contents from file before running
+    open('sentences.csv', 'w').close()
+
+    # process each article in the directory of articles that were previously parsed from nytimes.com
+    for file in os.listdir('articles_parsed/'):
+        file_name = os.path.splitext(file)[0]
+        if file_name[0] != '.': # this is to filter out for .DS_STORE which was casuing my program to crash
+            main('articles_parsed/' + file)
+    # test()
     
