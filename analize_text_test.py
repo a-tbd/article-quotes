@@ -2,14 +2,15 @@ import spacy
 
 import pprint
 import pdb
+import csv
 
 pp = pprint.PrettyPrinter(indent=4)
 
 nlp = spacy.load('en')
 
-def main():
+def parse_article(file_name):
 
-    file = open('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt', 'r')
+    file = open(file_name, 'r')
     doc = nlp(file.read())
 
     file.close()
@@ -31,10 +32,9 @@ def main():
         # combine each token using join()
         # pdb.set_trace()
         if len(span) > 1:
-            sent = ''.join(doc[i].string for i in range(span.start, span.end)).strip()
-
-            sents.append(sent)
-
+            sents.append(span.text.strip())
+        else:
+            print(span.start, span.text)
     
        
     all_names = {}
@@ -58,16 +58,43 @@ def main():
             if person in sent:
                 data['sentences'][key]['people'].append(person)
                 data['sentences'][key]['text'] = sent
+
+    return data
     
-    
+
+def write_to_csv(data):
+    # Write sentences to csv
+    open('sentences.csv', 'w').close()
     for key in data['sentences']:
         with open('sentences.csv', 'a') as output_file:
             new_entry = '{}, {}, {}, {}\n'.format(data['article_name'], key, data['sentences'][key]['people'], data['sentences'][key]['text'])
+            print(new_entry)
+            output_file.write('test')
+            # pdb.set_trace()
             output_file.write(new_entry)
-    pp.pprint(data)
+    # pp.pprint(data)
 
 
+def test():
+    data = parse_article('a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
+
+    file = open('a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt', 'r')
+    text = file.read()
+    file.close()
+    
+    recreate_text = ''.join([data['sentences'][entry]['text'] for entry in data['sentences']])
+    assert recreate_text == text
+
+    print('Victory!')
+
+
+
+
+def main(file_name):
+    data = parse_article(file_name)
+    write_to_csv(data)
 
 if __name__ == '__main__':
-    main()
-    open('sentences.csv', 'w').close()
+    # main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
+    test()
+    
