@@ -1,8 +1,8 @@
 import spacy
-
+import csv
 import pprint
 import pdb
-import csv
+import difflib
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -70,7 +70,6 @@ def write_to_csv(data):
             writer = csv.writer(output_file)
             new_entry = [data['article_name'], key, data['sentences'][key]['people'], data['sentences'][key]['text']]
             writer.writerow(new_entry)
-            # pdb.set_trace()
     # pp.pprint(data)
 
 
@@ -80,11 +79,20 @@ def test():
     file = open('a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt', 'r')
     text = file.read()
     file.close()
-    
-    recreate_text = ''.join([data['sentences'][entry]['text'] for entry in data['sentences']])
-    assert recreate_text == text
 
-    print('Victory!')
+    recreate_text = ''.join([data['sentences'][entry]['text'] for entry in data['sentences']])
+    
+    for i,s in enumerate(difflib.ndiff(recreate_text, text)):
+        if s[0] == ' ': 
+            continue
+        elif s[0] == '-':
+            print('Delete "{}" from {}'.format(s[-1], i))
+        elif s[0] == '+':
+            print('Add "{}" from {}'.format(s[-1], i))
+
+    # assert recreate_text == text
+
+    print('test complete')
 
 
 
@@ -94,6 +102,6 @@ def main(file_name):
     write_to_csv(data)
 
 if __name__ == '__main__':
-    main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
-    # test()
+    # main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
+    test()
     
