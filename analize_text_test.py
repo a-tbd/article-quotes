@@ -51,7 +51,6 @@ def parse_article(file_name):
     data['n_names'] = len(data['names'])
 
 
-    # We save names per sentence, it will repeat full names and last names as two different person, so if Donald J. Trup appears, it will say two person entities appear, Donald J. Trump and Trump
     for key, sent in enumerate(sents):
         data['sentences'][key] = {'people':[],'text':''}
         for person in all_names.keys():
@@ -63,15 +62,16 @@ def parse_article(file_name):
     
 
 def write_to_csv(data):
-    # Write sentences to csv
+    '''Write data from parsed articles to csv file in the following format:
+    title | sentence number | sentence text | persons in article | names of people quoted
+    '''
     open('sentences.csv', 'w').close()
     for key in data['sentences']:
         with open('sentences.csv', 'a') as output_file:
-            new_entry = '{}, {}, {}, {}\n'.format(data['article_name'], key, data['sentences'][key]['people'], data['sentences'][key]['text'])
-            print(new_entry)
-            output_file.write('test')
+            writer = csv.writer(output_file)
+            new_entry = [data['article_name'], key, data['sentences'][key]['people'], data['sentences'][key]['text']]
+            writer.writerow(new_entry)
             # pdb.set_trace()
-            output_file.write(new_entry)
     # pp.pprint(data)
 
 
@@ -95,6 +95,6 @@ def main(file_name):
     write_to_csv(data)
 
 if __name__ == '__main__':
-    # main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
-    test()
+    main('articles_parsed/a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
+    # test()
     
