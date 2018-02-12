@@ -2,12 +2,11 @@ import spacy
 import csv
 import pprint
 import os
-import pdb
-import difflib
 
 pp = pprint.PrettyPrinter(indent=4)
 
 nlp = spacy.load('en')
+
 
 def parse_article(file_name):
     article_name = file_name.split('/')[-1]
@@ -26,18 +25,15 @@ def parse_article(file_name):
     # Let's look at the sentences
     sents = []
     # the "sents" property returns spans
-    # spans have indices into the original string
-    # where each index value represents a token
+    # spans have indices into the original string where each index value represents a token
     for span in doc.sents:
         # go from the start to the end of each span, returning each token in the sentence
-        # combine each token using join()
-        # pdb.set_trace()
+        # Note len(span) counts the number of tokens, a single token could still have several characters.
         if len(span) > 1:
             sents.append(span.text.strip())
         else:
             print(span.start, span.text)
-    
-       
+
     all_names = {}
     for ent in doc.ents:      
         if ent.label_ == 'PERSON':
@@ -50,7 +46,6 @@ def parse_article(file_name):
                     all_names[last_name].append(ent.text)
 
     data['n_names'] = len(data['names'])
-
 
     for key, sent in enumerate(sents):
         data['sentences'][key] = {'people':[],'text':sent}
@@ -73,33 +68,10 @@ def write_to_csv(data):
     # pp.pprint(data)
 
 
-def test():
-    data = parse_article('a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt')
-
-    file = open('a-sense-of-dread-for-civil-servants-shaken-by-trump-transition.html.txt', 'r')
-    text = file.read()
-    file.close()
-
-    recreate_text = ''.join([data['sentences'][entry]['text'] for entry in data['sentences']])
-    
-    for i,s in enumerate(difflib.ndiff(recreate_text, text)):
-        if s[0] == ' ': 
-            continue
-        elif s[0] == '-':
-            print('Delete "{}" from {}'.format(s[-1], i))
-        elif s[0] == '+':
-            print('Add "{}" from {}'.format(s[-1], i))
-
-    # assert recreate_text == text
-
-    print('test complete')
-
-
-
-
 def main(file_name):
     data = parse_article(file_name)
     write_to_csv(data)
+
 
 if __name__ == '__main__':
     # delete all contents from file before running
@@ -110,5 +82,3 @@ if __name__ == '__main__':
         file_name = os.path.splitext(file)[0]
         if file_name[0] != '.': # this is to filter out for .DS_STORE which was casuing my program to crash
             main('articles_parsed/' + file)
-    # test()
-    
